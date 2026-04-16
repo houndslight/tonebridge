@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # tonebridge.
 
 **Zero-effort DAW-to-stream loopback for guitarists & singers.**
