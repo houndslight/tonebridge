@@ -20,6 +20,7 @@
 using NAudio.CoreAudioApi;
 using System.Linq;
 
+
 /// Checks whether the VB-Audio Virtual Cable is installed on the system.
 /// 
 /// This is critical because:
@@ -52,16 +53,17 @@ namespace tonebridge
         // Method to check if the VB-Audio Virtual Cable is installed
         public bool CheckVBACableInstalled()
         {
-            // Lists all system audio endpoints
-            var endpointInterfaces = DeviceEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            // Enumerates all endpoints instead of just the default
+            var enumerator = new MMDeviceEnumerator();
+            var devices = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
 
-            // Expected names we need
-            string[] expectedDeviceNames = { "CABLE Input", "CABLE Output"};
+            // expected names
+            string[] expectedDeviceNames = { "CABLE Input", "CABLE Output" };
 
-            // Device check
-            bool VBACableInstalled = expectedDeviceNames.All(deviceName => endpointInterfaces.Any(endpointInterfaces => endpoint.FriendlyName.Contains(deviceName)));
+            // check if devices exisy
+            bool installed = expectedDeviceNames.All(expectedName => devices.Any(d => d.FriendlyName.Contains(expectedName)));
 
-            return VBACableInstalled;
+            return installed;
         }
     }
 }

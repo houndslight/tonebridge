@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks.Dataflow;      // needed for checks
 
 /// Bread & Butter:
 /// 
@@ -72,78 +71,102 @@ namespace tonebridge
 {
     public partial class MainForm : Form
     {
-        private readonly VBAChecker _vbAChecker;
-        private WaveOutEvent waveOut;
-        private AudioFileReader audioFile;
+        // core deps
+        private readonly VBAChecker  _vbAchecker;
+        private WaveOutEvent? waveOut;
+        private AudioFileReader? audioFile;
 
-        // Constructor
+        // UI
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Button btnTestSignal;
+        private System.Windows.Forms.Button btnOpenDownloadPage;
+        private System.Windows.Forms.Label lblWarning;
+
+         // constructor
         public MainForm()
         {
             InitializeComponent();
 
-            // vba checker instance
-            _vbAChecker = new VBAChecker();
+            _vbAchecker = new VBAChecker();
 
-            // vb audio install check
-            if (!_vbAChecker.CheckVBACableInstalled())
+            if (!_vbAchecker.CheckVBACableInstalled())
             {
-                lblStatus.Text = "VB-Audio Virtual Cable not found.";
+                lblStatus.Text = "Virtual Cable was not found!";
                 btnTestSignal.Enabled = false;
                 btnOpenDownloadPage.Visible = true;
                 lblWarning.Visible = true;
             }
             else
             {
-                lblStatus.Text = "VB-Audio Virtual Cable found!";
+                lblStatus.Text = "Virtual Cable found!";
                 btnOpenDownloadPage.Visible = false;
                 lblWarning.Visible = false;
             }
 
-            // test signal click event handler
             btnTestSignal.Click += BtnTestSignal_Click;
-
-            // download (if needed)
-            btnOpenDownloadPage.Click += BtnOpenDownloadPage_Click;
+            btnOpenDownloadPage.Click += BtnOpenDownloadPage_Click;  // Line 112: make sure it's .Click +=
         }
 
-            private void BtnTestSignal_Click(object sender, EventArgs e)
-            {
-               // short tone using NAudio
-               string toneFilePath = "#.wav"; // will replace later
-               audioFile = new AudioFileReader(toneFilePath);
-               waveOut = new WaveOutEvent();
-               waveOut.Init(audioFile);
-               waveOut.Play();
-
-               lblStatus.Text = "Playing test signal. Please check OBS/Discord meters."; 
-            }
-
-            private void BtnOpenDownloadPage_Click(object sender, EventArgs e)
-            {
-                // Opens VB download
-                System.Diagnostics.Process.Start("https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip");
-            }
-        }
-        public class VBAChecker
+        private void InitializeComponent()
         {
-            // Constructor
-            public VBAChecker()
-            {
-                // Init (if needed)
-            }
+            // program controls
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.btnTestSignal = new System.Windows.Forms.Button();
+            this.btnOpenDownloadPage = new System.Windows.Forms.Button();
+            this.lblWarning = new System.Windows.Forms.Label();
 
-            public bool CheckVBACableInstalled()
-            {
-                // List of all audio endpoints
-                var endpointInterfaces = DeviceEnum.getDefaultAudioEndpoint(Dataflow.Render, Role.Multimedia);
+            // form settings
+            this.ClientSize = new System.Drawing.Size(600, 400);
+            this.Text = "tonebridge.";
 
-                // Expected names (VB Cable)
-                string[] expectedDeviceNames = { "CABLE Input", "CABLE Output" };
+            // lblStatus
+            this.lblStatus.Location = new System.Drawing.Point(20, 20);
+            this.lblStatus.Size = new System.Drawing.Size(550, 30);
+            this.lblStatus.Text = "Checking....";  // <-- Capital T here
+            this.Controls.Add(this.lblStatus);
 
-                // Device check
-                bool VBACableInstalled = expectedDeviceNames.All(deviceName => endpointInterfacesInterfaces.Any(endpoint => endpoint.FriendlyName.Contains(deviceName)));
+            // Test signal
+            this.btnTestSignal.Location = new System.Drawing.Point(20, 80);
+            this.btnTestSignal.Size = new System.Drawing.Size(150, 40);
+            this.btnTestSignal.Text = "Test!";
+            this.Controls.Add(this.btnTestSignal);
 
-                return VBACableInstalled;
-            }
+            // btnTestSignal
+            this.btnTestSignal.Location = new System.Drawing.Point(20, 80);
+            this.btnTestSignal.Size = new System.Drawing.Size(150, 40);
+            this.btnTestSignal.Text = "Test Signal";
+            this.Controls.Add(this.btnTestSignal);
+            
+            // btnOpenDownloadPage
+            this.btnOpenDownloadPage.Location = new System.Drawing.Point(20, 140);
+            this.btnOpenDownloadPage.Size = new System.Drawing.Size(200, 40);
+            this.btnOpenDownloadPage.Text = "Download VB-Cable";
+            this.Controls.Add(this.btnOpenDownloadPage);
+            
+            // lblWarning
+            this.lblWarning.Location = new System.Drawing.Point(20, 200);
+            this.lblWarning.Size = new System.Drawing.Size(550, 60);
+            this.lblWarning.Text = "Turn OFF Direct Monitoring on your Scarlett Solo!";
+            this.lblWarning.ForeColor = System.Drawing.Color.Red;
+            this.Controls.Add(this.lblWarning);
+        }
+        
+        private void BtnTestSignal_Click(object sender, EventArgs e)
+        {
+            // tone using NAudio
+            string toneFilePath = "#.wav"; // STILL WILL REPLACE LATER LOL
+            audioFile = new AudioFileReader(toneFilePath);
+            waveOut = new WaveOutEvent();
+            waveOut.Init(audioFile);
+            waveOut.Play();
+
+            lblStatus.Text = "Playing test signal. Please check OBS/Discord meters.";
+        }
+
+        private void BtnOpenDownloadPage_Click(object sender, EventArgs e)
+        {
+            // Opens VB download
+            System.Diagnostics.Process.Start("https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip");
         }
     }
+}
