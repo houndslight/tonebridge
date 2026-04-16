@@ -1,0 +1,14 @@
+# AI Agent / Documentation files (local only)
+ARCHITECTURE.md
+CLAUDE.md
+DAW-SETUP.md
+RULES.md
+SCARLETT-SOLO.md
+SETUP.md
+
+# Standard C# ignores
+bin/
+obj/
+*.user
+*.suo
+.vs/
