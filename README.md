@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # tonebridge.
 
 **Zero-effort DAW-to-stream loopback for guitarists & singers.**
@@ -35,3 +36,7 @@ Most musicians fight with ASIO vs WDM, Direct Monitoring doubling, and OBS not s
 - [DAW Configuration](DAW-SETUP.md)
 
 Made for musicians by a musician.
+=======
+# tonebridge
+Zero effort DAW to stream loopback for musicians who livestream with old hardware.
+>>>>>>> 05171a032993549faa65cb2154b02a827a4bf351
